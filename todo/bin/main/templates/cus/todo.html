@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+
+<head th:replace="common/head">
+</head>
+<script src="js/todo.js"></script>
+<body>
+	<div class="jumbotron todo_main_area">
+		<div class="container text-center todo_main">
+			<div class="row">
+				<div class="col-md-12 p-0 m-0">
+					<nav th:replace="common/nav"></nav>
+					<div th:if="${session.user_info} !=null" class="welcome_area">
+						[[${session.user_info.nickName} + 'Welcome!']]</div>
+					<!--	<h1 class="title">
+						  <span>Todo + </span>
+					</h1>-->
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<form method="post" id="formif" action="/todo">
+						<div class="form-group">
+							<label for="title">title:</label> <input type="text"
+								class="form-control" id="title" name="title">
+						</div>
+						<div class="range-group">
+							<label for="range">Range:</label> <input type="radio"
+								name="range" id="me" value="me" checked="checked"> <label
+								for="me"><span>Me </span></label> <input type="radio"
+								name="range" id="our" value="our"> <label for="our"><span>Our</span></label>
+						</div>
+
+
+						<div id="friendtab" style="display: none">
+							<h3>Friend Setting</h3>
+							<div class="form-group">
+								<label for="nickName" style="font-size: 15pt">Nickname</label> <input
+									type="text" class="form-control" id="nickName" name="nickName">
+							</div>
+
+							<div class="alert alert-danger" id="alert-danger">Not found
+								ID</div>
+							<div class="alert alert-danger" id="alert-danger2">Already
+								Friend</div>
+							<button type="button" class="btn btn-danger btn-block" id="Add">Add
+								Friend</button>
+							<div id=addlist>FriendList</div>
+							<div id="tod"></div>
+						</div>
+
+
+
+						<div class="color-group">
+							<label for="color">color:</label> <input type="radio"
+								name="color" id="lightpink" value="#FFB8B8" checked="checked"><label
+								for="lightpink"><span style="color: #FFB8B8;">pink
+							</span></label> <input type="radio" name="color" id="lightblue" value="#A1CDFF"><label
+								for="lightblue"><span style="color: #A1CDFF;">blue
+							</span> </label> <input type="radio" name="color" id="lightgreen"
+								value="#B9FFA1"><label for="lightgreen"><span
+								style="color: #B9FFA1;">green</span> </label> <input type="radio"
+								name="color" id="lightorange" value="#FFAB6D"><label
+								for="lightorange"><span style="color: #FFAB6D;">orange
+							</span> </label> <input type="radio" name="color" id="lightyellow"
+								value="#F7FF7E"><label for="lightyellow"><span
+								style="color: #F7FF7E;">yellow </span></label> <input type="radio"
+								name="color" id="lightpurple" value="#B590FF"><label
+								for="lightpurple"><span style="color: #B590FF;">purple
+							</span></label>
+
+						</div>
+
+
+						<div class="form-group">
+							<label for="count">count:</label> <input type="text"
+								class="form-control" id="count" name="count">
+						</div>
+
+						<div class="form-group">
+							<label for="startDate">StartDate:</label> <input type="date"
+								class="form-control" id="startDate" name="startDate"> <label
+								for="endDate">EndDate:</label> <input type="date"
+								class="form-control" id="endDate" name="endDate">
+						</div>
+
+
+						<div class="input-PartyList"></div>
+
+						<button class="btn btn-primary btn-block" id="todo">Submit</button>
+
+
+					</form>
+				</div>
+			</div>
+			<div class="row footer_box">
+				<div th:replace="common/footer"></div>
+			</div>
+
+		</div>
+	</div>
+
+
+	<script>
+		$(".range-group").click(function() {
+
+			if (document.all.range[0].checked) {
+				console.log("1");
+				$("#tod").empty();
+				$(".input-PartyList").empty();
+				$("#formif").attr("action", "/todo");
+				$("#friendtab").hide();
+			}
+
+			else {
+				console.log("2");
+				
+				$("#formif").attr("action", "/todo2");
+				$("#friendtab").show();
+				
+			}
+		});
+	</script>
+
+
+	<!-- 	Bootstrap core JavaScript-->
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+	
+		var PartyList = new Array();
+		var index=0;
+		$("#alert-danger").hide();
+		$("#alert-danger2").hide();
+		$("#Add").click(function() {
+					
+					var Nickname=$("#nickName").val();
+					var user_list = /*[[${userlist}]]*/;
+					var friend_list = /*[[${friendlist}]]*/;
+			
+					var flag1=false;
+					var flag2=false;
+					
+					for(var idx in friend_list){   //
+						if(Nickname==friend_list[idx].usr1 || Nickname==friend_list[idx].usr2){
+							flag1=true;
+						}
+					}
+					if(flag1){
+					
+						
+						for(var idx in user_list){   //
+							if(Nickname==user_list[idx].nickName){ // getterx html�뜝�룞�삕�뜝�룞�삕�뜝�룞�삕
+
+								flag2=true;
+								$("#tod").append("<div value='" + Nickname + "'>" + Nickname + "</div>");
+								$(".input-PartyList").append("<input type=hidden name=addname value= " + Nickname + " id=" + Nickname +"></input>")
+								
+							}		
+						}
+					}
+					if(!flag1){
+						$("#alert-danger").show();
+					}
+					
+					console.log(PartyList);
+				});
+		
+		/*]]>*/
+		
+
+	</script>
+
+
+</body>
+</html>

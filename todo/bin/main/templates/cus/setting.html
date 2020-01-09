@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="utf-8">
+<head th:replace="common/head">
+</head>
+
+<style>
+.friend {
+	font-size: 1.0em;
+}
+</style>
+<body>
+	<div class="jumbotron todo_main_area">
+		<div class="container text-center todo_main">
+			<div class="row">
+				<div class="col-md-12 p-0 m-0">
+					<nav th:replace="common/nav"></nav>
+					<div th:if="${session.user_info} !=null" class="welcome_area">
+						'Welcome !'+ [[${session.user_info.nickName} + ' ^-^']]</div>
+					<h1 class="title">
+						<span>Setting</span>
+					</h1>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#tab1">Todo
+								Sets</a></li>
+						<li><a data-toggle="tab" href="#tab2">Friend Set</a></li>
+						<li><a data-toggle="tab" href="#tab3">App Set</a></li>
+					</ul>
+					<div class="tab-content">
+						<div id="tab1" class="tab-pane fade in active">
+							<p class="title_total">
+								Todo Total : <span th:text="${count}"></span>
+							</p>
+							<div id="todo" th:each="Todo : ${list_real}">
+								<div class="todo_set_list">
+									<ul>
+										<li><span th:text="${Todo.title}"></span></li>
+										<li>Start : <span th:text="${Todo.startDate}"></span></li>
+										<li>End : <span th:text="${Todo.endDate}"></span></li>
+									</ul>
+									<div class="btn_delete">
+										<a href="javascript:;" class="delete"
+											th:attr="t-id=${Todo.id}">Delete</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div id="tab2" class="tab-pane fade">
+							<h3>Friend Setting</h3>
+							<form method="post" action="/">
+
+								<div class="form-group">
+									<label for="nickName" style="font-size: 15pt">Nickname</label>
+									<input type="text" class="form-control" id="nickName"
+										name="nickName">
+								</div>
+
+								<div class="alert alert-danger" id="alert-danger">Not
+									found ID</div>
+								<div class="alert alert-danger" id="alert-danger2">Already
+									Friend</div>
+								<button type="button" class="btn btn-danger btn-block" id="Add">Add
+									Friend</button>
+							</form>
+						
+
+								<br> <label style="font-size: 15pt">FriendList</label> <br>
+
+								<div id="tod" th:each="Friend : ${friendlist}"
+									th:attr="id=${Friend.id}" style="display: inline-block">
+
+									<div th:if="${session.user_info.nickName} == ${Friend.usr1}"
+										class="friend">[[${Friend.usr2} ]]</div>
+									<div th:if="${session.user_info.nickName} == ${Friend.usr2}"
+										class="friend">[[${Friend.usr1} ]]</div>
+
+								</div>
+								<!-- 					<a class="nav-link" href="todo"> <i class="fas fa-plus fa-5x"></i></a> -->
+						
+						</div>
+						<div id="tab3" class="tab-pane fade">
+							<form>
+								<div class="form-group" style="margin-top: 30px;">
+									<button type="button" class="btn btn-block btn-primary"
+										onclick="logout();">Sign out</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row footer_box">
+				<div th:replace="common/footer"></div>
+			</div>
+		</div>
+	</div>
+	<form method="post" action="/invite">
+		<input type="hidden" name="usr" id="usr">
+	</form>
+
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		
+		
+				$("#alert-danger").hide();
+				$("#alert-danger2").hide();
+				$("#Add").click(function() {
+					
+					var Nickname=$("#nickName").val();
+					var user_list = /*[[${userlist}]]*/;
+					var friend_list = /*[[${friendlist}]]*/;
+					var loginuser=/*[[${dbUser}]]*/;
+					console.log(loginuser);
+					var flag1=false;
+					var flag2=false; 
+					
+					for(var idx in friend_list){   //
+						
+						if(Nickname==friend_list[idx].usr1 && loginuser==friend_list[idx].usr2){
+							flag1=true;
+							$("#alert-danger2").show();
+						}
+						else if(Nickname==friend_list[idx].usr2 && loginuser==friend_list[idx].usr1){
+							flag1=true;
+							$("#alert-danger2").show();
+						}
+					}
+					if(!flag1){
+						for(var idx in user_list){   //
+							if(Nickname==user_list[idx].nickName){ // getterx html�뜝�룞�삕�뜝�룞�삕�뜝�룞�삕
+								flag2=true;
+								$("#usr").val(Nickname);
+								$(document.forms[2]).submit();
+								return false;
+						}		
+					}
+					}
+					if(!flag1 && !flag2){
+						$("#alert-danger").show();
+						
+					}
+				
+				});
+			
+
+		
+		/*]]>*/
+		</script>
+
+
+	<script type="text/javascript" th:inline="javascript">
+		$(".delete").click(function() {
+			var con = confirm("Delete?");
+			if (con == true) {
+				var t_id = $(this).attr("t-id");
+				location = "/setting/delete/" + t_id;
+				console.log(t_id);
+				return false;
+			} else {
+				return false;
+			}
+		});
+	</script>
+	<script type="text/javascript" th:inline="javascript">
+		function logout() {
+			var con = confirm("Sign out?");
+			if (con == true) {
+				location = "/signout";
+				//logout占쎌뱽 占쎌맄占쎈퉸 占쎄쉭占쎈�∽옙�뱽 占쎌젫椰꾧퀬釉�占쎈뮉 占쎈읂占쎌뵠筌욑옙 占쎌깈�빊占�
+			} else {
+				return false;
+			}
+		}
+	</script>
+</body>
+</html>
